@@ -3,7 +3,7 @@
 %%
 %% @author Tomasz Jakub Rup <tomasz.rup@gmail.com>
 %% @copyright 2011 Tomasz Jakub Rup
-%% @see RFC 4211
+%% @see http://www.ietf.org/rfc/rfc4122.txt
 %% @doc UUID implementation in Erlang.
 %% @end
 %%
