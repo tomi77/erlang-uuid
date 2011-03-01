@@ -3,7 +3,9 @@
 %%
 %% @author Tomasz Jakub Rup <tomasz.rup@gmail.com>
 %% @copyright 2011 Tomasz Jakub Rup
-%% @doc UUID ([http://www.ietf.org/rfc/rfc4122.txt RFC4122]) implementation in Erlang.
+%% @reference <a href="http://www.ietf.org/rfc/rfc4122.txt">RFC4122</a>
+%% @version 1.0.0
+%% @doc UUID implementation in Erlang.
 %% @end
 %%
 %% The MIT license.
@@ -44,7 +46,7 @@
 
 %% ------------------------------------------------------------------
 %% @spec validate(UUID) -> match | nomatch
-%%       UUID = list() | binary() | integer()
+%%       UUID = string() | binary() | integer()
 %% @doc Validate a UUID.
 %% @end
 %% ------------------------------------------------------------------
@@ -56,9 +58,8 @@ validate(_) ->
 	nomatch.
 
 %% ------------------------------------------------------------------
-%% @spec v3(Namespace, Name) -> binary()
-%%       Namespace = binary()
-%%       Name = binary() | list()
+%% @spec v3(Namespace::binary(), Name) -> binary()
+%%       Name = binary() | string()
 %% @doc Get a MD5 name based UUID (RFC4122 Version 3).
 %% @end
 %% ------------------------------------------------------------------
@@ -76,9 +77,8 @@ v4() ->
 	gen_binary(rand(32), rand(16), rand(12), 4, 2, rand(6), rand(8), rand(48)).
 
 %% ------------------------------------------------------------------
-%% @spec v5(Namespace, Name) -> binary()
-%%       Namespace = binary()
-%%       Name = binary() | list()
+%% @spec v5(Namespace::binary(), Name) -> binary()
+%%       Name = binary() | string()
 %% @doc Get a SHA-1 name based UUID (RFC4122 Version 5).
 %% @end
 %% ------------------------------------------------------------------
@@ -96,9 +96,8 @@ nil() ->
 	<<0:128>>.
 
 %% ------------------------------------------------------------------
-%% @spec to_string(UUID) -> String
+%% @spec to_string(UUID) -> string()
 %%       UUID = list() | binary() | integer()
-%%       String = list()
 %% @doc Format the UUID into string representation.
 %% @end
 %% ------------------------------------------------------------------
@@ -146,16 +145,24 @@ ns_x500() ->
 %%====================================================================
 
 %% ------------------------------------------------------------------
+%% @spec gen_binary(TimeLow::integer(), TimeMid::integer(), TimeHi::integer(), Version::integer(), Res::integer(), ClkSeqHi::integer(), ClkSeqLow::integer(), Node::integer()) -> binary()
+%% @private
 %% ------------------------------------------------------------------
 gen_binary(TimeLow, TimeMid, TimeHi, Version, Res, ClkSeqHi, ClkSeqLow, Node) ->
 	<<TimeLow:32, TimeMid:16, Version:4, TimeHi:12, Res:2, ClkSeqHi:6, ClkSeqLow:8, Node:48>>.
 
 %% ------------------------------------------------------------------
+%% @spec rand(Res::integer()) -> integer()
+%% @private
 %% ------------------------------------------------------------------
 rand(Res) ->
 	random:uniform(round(math:pow(2, Res)) - 1).
 
 %% ------------------------------------------------------------------
+%% @spec unpack(binary()) -> [TimeLow, TimeMid, TimeHighAndVersion, ClkSeqHiRes, ClkSeqLow, Node]
+%% @private
+%% @doc Unpack the UUID into it's parts.
+%% @end
 %% ------------------------------------------------------------------
 unpack(<<TimeLow:32, TimeMid:16, TimeHighAndVersion:16, ClkSeqHiRes:8, ClkSeqLow:8, Node:48>>) ->
 	[TimeLow, TimeMid, TimeHighAndVersion, ClkSeqHiRes, ClkSeqLow, Node];
