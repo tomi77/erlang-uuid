@@ -35,7 +35,7 @@
 
 %% API
 -export([validate/1]).
--export([v3/2, v4/0]).
+-export([v3/2, v4/0, v5/2]).
 -export([to_string/1, to_binary/1]).
 -export([ns_nil/0, ns_dns/0, ns_url/0, ns_iso_oid/0, ns_x500_dn/0]).
 
@@ -63,6 +63,13 @@ v3(Namespace, Name) when is_binary(Namespace) ->
 %% ------------------------------------------------------------------
 v4() ->
 	gen_binary(rand(32), rand(16), rand(12), 4, 2, rand(6), rand(8), rand(48)).
+
+%% ------------------------------------------------------------------
+%% ------------------------------------------------------------------
+v5(Namespace, Name) when is_binary(Namespace) ->
+	crypto:start(),
+	<<TimeLow:32, TimeMid:16, _:4, TimeHigh:12, _:2, ClkSeqHi:6, ClkSeqLow:8, Node:48, _:32>> = crypto:sha(list_to_binary([Namespace, Name])),
+	gen_binary(TimeLow, TimeMid, TimeHigh, 5, 2, ClkSeqHi, ClkSeqLow, Node).
 
 %% ------------------------------------------------------------------
 %% ------------------------------------------------------------------
