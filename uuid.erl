@@ -3,8 +3,7 @@
 %%
 %% @author Tomasz Jakub Rup <tomasz.rup@gmail.com>
 %% @copyright 2011 Tomasz Jakub Rup
-%% @see http://www.ietf.org/rfc/rfc4122.txt
-%% @doc UUID implementation in Erlang.
+%% @doc UUID ([http://www.ietf.org/rfc/rfc4122.txt RFC4122]) implementation in Erlang.
 %% @end
 %%
 %% The MIT license.
@@ -35,15 +34,19 @@
 
 %% API
 -export([validate/1]).
--export([v3/2, v4/0, v5/2]).
--export([to_string/1, to_binary/1]).
--export([ns_nil/0, ns_dns/0, ns_url/0, ns_iso_oid/0, ns_x500_dn/0]).
+-export([v3/2, v4/0, v5/2, nil/0]).
+-export([to_string/1]).
+-export([ns_dns/0, ns_url/0, ns_oid/0, ns_x500/0]).
 
 %%====================================================================
 %% API
 %%====================================================================
 
 %% ------------------------------------------------------------------
+%% @spec validate(UUID) -> match | nomatch
+%%       UUID = list() | binary() | integer()
+%% @doc Validate a UUID.
+%% @end
 %% ------------------------------------------------------------------
 validate(UUID) when is_list(UUID) ->
 	re:run(UUID, "^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$", [{capture, none}]);
@@ -53,6 +56,11 @@ validate(_) ->
 	nomatch.
 
 %% ------------------------------------------------------------------
+%% @spec v3(Namespace, Name) -> binary()
+%%       Namespace = binary()
+%%       Name = binary() | list()
+%% @doc Get a MD5 name based UUID (RFC4122 Version 3).
+%% @end
 %% ------------------------------------------------------------------
 v3(Namespace, Name) when is_binary(Namespace) ->
 	crypto:start(),
@@ -60,11 +68,19 @@ v3(Namespace, Name) when is_binary(Namespace) ->
 	gen_binary(TimeLow, TimeMid, TimeHigh, 3, 2, ClkSeqHi, ClkSeqLow, Node).
 
 %% ------------------------------------------------------------------
+%% @spec v4() -> binary()
+%% @doc Get a (pseudo) random UUID (RFC4122 Version 4).
+%% @end
 %% ------------------------------------------------------------------
 v4() ->
 	gen_binary(rand(32), rand(16), rand(12), 4, 2, rand(6), rand(8), rand(48)).
 
 %% ------------------------------------------------------------------
+%% @spec v5(Namespace, Name) -> binary()
+%%       Namespace = binary()
+%%       Name = binary() | list()
+%% @doc Get a SHA-1 name based UUID (RFC4122 Version 5).
+%% @end
 %% ------------------------------------------------------------------
 v5(Namespace, Name) when is_binary(Namespace) ->
 	crypto:start(),
@@ -72,6 +88,19 @@ v5(Namespace, Name) when is_binary(Namespace) ->
 	gen_binary(TimeLow, TimeMid, TimeHigh, 5, 2, ClkSeqHi, ClkSeqLow, Node).
 
 %% ------------------------------------------------------------------
+%% @spec nil() -> binary()
+%% @doc Get the RFC4122 Nil UUID.
+%% @end
+%% ------------------------------------------------------------------
+nil() ->
+	<<0:128>>.
+
+%% ------------------------------------------------------------------
+%% @spec to_string(UUID) -> String
+%%       UUID = list() | binary() | integer()
+%%       String = list()
+%% @doc Format the UUID into string representation.
+%% @end
 %% ------------------------------------------------------------------
 to_string(UUID) when is_list(UUID) ->
 	lists:flatten(io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", UUID));
@@ -81,25 +110,15 @@ to_string(UUID) when is_integer(UUID) ->
 	to_string(<<UUID:128>>).
 
 %% ------------------------------------------------------------------
-%% ------------------------------------------------------------------
-to_binary(UUID) when is_integer(UUID) ->
-	<<UUID:128>>.
-
-%% ------------------------------------------------------------------
-%% @doc Get the RFC4122 Nil UUID.
-%% @end
-%% ------------------------------------------------------------------
-ns_nil() ->
-	<<0:128>>.
-
-%% ------------------------------------------------------------------
-%% @doc Get the RFC4122 DNS namespace UUID.
+%% @spec ns_dns() -> binary()
+%% @doc Get the RFC4122 fully-qualified domain name namespace UUID.
 %% @end
 %% ------------------------------------------------------------------
 ns_dns() ->
 	gen_binary(1806153744, 40365, 465, 1, 2, 128, 180, 825973027016).
 
 %% ------------------------------------------------------------------
+%% @spec ns_url() -> binary()
 %% @doc Get the RFC4122 URL namespace UUID.
 %% @end
 %% ------------------------------------------------------------------
@@ -107,17 +126,19 @@ ns_url() ->
 	gen_binary(1806153745, 40365, 465, 1, 2, 128, 180, 825973027016).
 
 %% ------------------------------------------------------------------
-%% @doc Get the RFC4122 OID namespace UUID.
+%% @spec ns_oid() -> binary()
+%% @doc Get the RFC4122 ISO OID namespace UUID.
 %% @end
 %% ------------------------------------------------------------------
-ns_iso_oid() ->
+ns_oid() ->
 	gen_binary(1806153746, 40365, 465, 1, 2, 128, 180, 825973027016).
 
 %% ------------------------------------------------------------------
-%% @doc Get the RFC4122 X500 namespace UUID.
+%% @spec ns_x500() -> binary()
+%% @doc Get the RFC4122 X.500 DN namespace UUID.
 %% @end
 %% ------------------------------------------------------------------
-ns_x500_dn() ->
+ns_x500() ->
 	gen_binary(1806153748, 40365, 465, 1, 2, 128, 180, 825973027016).
 
 %%====================================================================
