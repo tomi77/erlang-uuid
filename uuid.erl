@@ -34,6 +34,10 @@
 -module(uuid).
 -author("Tomasz Jakub Rup <tomasz.rup@gmail.com>").
 
+-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.
+
 %% API
 -export([validate/1]).
 -export([v3/2, v4/0, v5/2, nil/0]).
@@ -49,6 +53,7 @@
 %%       UUID = string() | binary() | integer()
 %% @doc Validate a UUID.
 %% @end
+%% @todo Better validation (i.e. version validation)
 %% ------------------------------------------------------------------
 validate(UUID) when is_list(UUID) ->
 	re:run(UUID, "^\{?[0-9a-f]{8}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{4}\-?[0-9a-f]{12}\}?$", [{capture, none}]);
@@ -101,12 +106,14 @@ nil() ->
 %% @doc Format the UUID into string representation.
 %% @end
 %% ------------------------------------------------------------------
-to_string(UUID) when is_list(UUID) ->
+to_string(UUID) when is_list(UUID) andalso length(UUID) =:= 6 ->
 	lists:flatten(io_lib:format("~8.16.0b-~4.16.0b-~4.16.0b-~2.16.0b~2.16.0b-~12.16.0b", UUID));
 to_string(UUID) when is_binary(UUID) ->
 	to_string(unpack(UUID));
 to_string(UUID) when is_integer(UUID) ->
-	to_string(<<UUID:128>>).
+	to_string(<<UUID:128>>);
+to_string(_) ->
+	to_string(nil()).
 
 %% ------------------------------------------------------------------
 %% @spec ns_dns() -> binary()
@@ -155,6 +162,8 @@ gen_binary(TimeLow, TimeMid, TimeHi, Version, Res, ClkSeqHi, ClkSeqLow, Node) ->
 %% @spec rand(Res::integer()) -> integer()
 %% @private
 %% ------------------------------------------------------------------
+rand(Res) when Res < 1 ->
+	0;
 rand(Res) ->
 	random:uniform(round(math:pow(2, Res)) - 1).
 
@@ -168,3 +177,64 @@ unpack(<<TimeLow:32, TimeMid:16, TimeHighAndVersion:16, ClkSeqHiRes:8, ClkSeqLow
 	[TimeLow, TimeMid, TimeHighAndVersion, ClkSeqHiRes, ClkSeqLow, Node];
 unpack(UUID) when is_integer(UUID) ->
 	unpack(<<UUID:128>>).
+
+%%====================================================================
+%% Tests
+%%====================================================================
+
+-ifdef(EUNIT).
+
+rand_test_() ->
+	[
+		?_assertEqual(0, rand(-1)),
+		?_assertEqual(0, rand(0)),
+		?_assert(rand(1) < 2),
+		?_assert(rand(2) < 4),
+		?_assert(rand(3) < 8)
+	].
+
+nil_test_() ->
+	?_assertEqual(<<0:128>>, nil()).
+
+ns_test_() ->
+	[
+		?_assertEqual(<<107,167,184,16,157,173,17,209,128,180,0,192,79,212,48,200>>, ns_dns()),
+		?_assertEqual(<<107,167,184,17,157,173,17,209,128,180,0,192,79,212,48,200>>, ns_url()),
+		?_assertEqual(<<107,167,184,18,157,173,17,209,128,180,0,192,79,212,48,200>>, ns_oid()),
+		?_assertEqual(<<107,167,184,20,157,173,17,209,128,180,0,192,79,212,48,200>>, ns_x500())
+	].
+
+v3_test_() ->
+	V3 = v3(ns_url(), "www.example.com"),
+	[
+		?_assert(is_binary(V3)),
+		?_assertEqual(16, length(binary_to_list(V3))),
+		?_assertEqual(<<167,119,25,154,197,34,49,196,143,75,51,95,238,199,33,91>>, V3),
+		?_assert(V3 =/= v3(ns_url(), "www.example.org"))
+	].
+
+v4_test_() ->
+	[
+		?_assert(is_binary(v4())),
+		?_assertEqual(16, length(binary_to_list(v4()))),
+		?_assert(v4() =/= v4())
+	].
+
+v5_test_() ->
+	V5 = v5(ns_url(), "www.example.com"),
+	[
+		?_assert(is_binary(V5)),
+		?_assertEqual(16, length(binary_to_list(V5))),
+		?_assertEqual(<<182,60,223,164,61,249,86,142,151,174,0,108,91,143,214,82>>, V5),
+		?_assert(V5 =/= v5(ns_url(), "www.example.org"))
+	].
+
+to_string_test_() ->
+	[
+		?_assertEqual("6ba7b810-9dad-11d1-80b4-00c04fd430c8", to_string(ns_dns())),
+		?_assertEqual("00000000-0000-0000-0000-000000000001", to_string(<<1:128>>)),
+		?_assertEqual("00000000-0000-0000-0000-000000000002", to_string(2)),
+		?_assertEqual("00000000-0000-0000-0000-000000000000", to_string("test"))
+	].
+
+-endif.
