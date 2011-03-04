@@ -168,7 +168,7 @@ rand(Res) ->
 	random:uniform(round(math:pow(2, Res)) - 1).
 
 %% ------------------------------------------------------------------
-%% @spec unpack(binary()) -> [TimeLow, TimeMid, TimeHighAndVersion, ClkSeqHiRes, ClkSeqLow, Node]
+%% @spec unpack(binary()) -> list()
 %% @private
 %% @doc Unpack the UUID into it's parts.
 %% @end
