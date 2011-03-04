@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Module uuid</title>
+<link rel="stylesheet" type="text/css" href="stylesheet.css" title="EDoc">
+</head>
+<body bgcolor="white">
+<div class="navbar"><a name="#navbar_top"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<hr>
+
+<h1>Module uuid</h1>
+<ul class="index"><li><a href="#description">Description</a></li><li><a href="#index">Function Index</a></li><li><a href="#functions">Function Details</a></li></ul>UUID implementation in Erlang.
+<p>Copyright © 2011 Tomasz Jakub Rup</p>
+
+<p><b>Version:</b> 1.0.0</p>
+<p><b>Authors:</b> Tomasz Jakub Rup (<a href="mailto:tomasz.rup@gmail.com"><tt>tomasz.rup@gmail.com</tt></a>).</p>
+<p><b>References</b><ul><li><a href="http://www.ietf.org/rfc/rfc4122.txt">RFC4122</a></li></ul></p>
+
+<h2><a name="description">Description</a></h2>UUID implementation in Erlang.
+<h2><a name="index">Function Index</a></h2>
+<table width="100%" border="1" cellspacing="0" cellpadding="2" summary="function index"><tr><td valign="top"><a href="#nil-0">nil/0</a></td><td>Get the RFC4122 Nil UUID.</td></tr>
+<tr><td valign="top"><a href="#ns_dns-0">ns_dns/0</a></td><td>Get the RFC4122 fully-qualified domain name namespace UUID.</td></tr>
+<tr><td valign="top"><a href="#ns_oid-0">ns_oid/0</a></td><td>Get the RFC4122 ISO OID namespace UUID.</td></tr>
+<tr><td valign="top"><a href="#ns_url-0">ns_url/0</a></td><td>Get the RFC4122 URL namespace UUID.</td></tr>
+<tr><td valign="top"><a href="#ns_x500-0">ns_x500/0</a></td><td>Get the RFC4122 X.500 DN namespace UUID.</td></tr>
+<tr><td valign="top"><a href="#to_string-1">to_string/1</a></td><td>Format the UUID into string representation.</td></tr>
+<tr><td valign="top"><a href="#v3-2">v3/2</a></td><td>Get a MD5 name based UUID (RFC4122 Version 3).</td></tr>
+<tr><td valign="top"><a href="#v4-0">v4/0</a></td><td>Get a (pseudo) random UUID (RFC4122 Version 4).</td></tr>
+<tr><td valign="top"><a href="#v5-2">v5/2</a></td><td>Get a SHA-1 name based UUID (RFC4122 Version 5).</td></tr>
+<tr><td valign="top"><a href="#validate-1">validate/1</a></td><td>Validate a UUID.</td></tr>
+</table>
+
+<h2><a name="functions">Function Details</a></h2>
+
+<h3 class="function"><a name="nil-0">nil/0</a></h3>
+<div class="spec">
+<p><tt>nil() -&gt; binary()</tt></p>
+</div><p>Get the RFC4122 Nil UUID.</p>
+
+<h3 class="function"><a name="ns_dns-0">ns_dns/0</a></h3>
+<div class="spec">
+<p><tt>ns_dns() -&gt; binary()</tt></p>
+</div><p>Get the RFC4122 fully-qualified domain name namespace UUID.</p>
+
+<h3 class="function"><a name="ns_oid-0">ns_oid/0</a></h3>
+<div class="spec">
+<p><tt>ns_oid() -&gt; binary()</tt></p>
+</div><p>Get the RFC4122 ISO OID namespace UUID.</p>
+
+<h3 class="function"><a name="ns_url-0">ns_url/0</a></h3>
+<div class="spec">
+<p><tt>ns_url() -&gt; binary()</tt></p>
+</div><p>Get the RFC4122 URL namespace UUID.</p>
+
+<h3 class="function"><a name="ns_x500-0">ns_x500/0</a></h3>
+<div class="spec">
+<p><tt>ns_x500() -&gt; binary()</tt></p>
+</div><p>Get the RFC4122 X.500 DN namespace UUID.</p>
+
+<h3 class="function"><a name="to_string-1">to_string/1</a></h3>
+<div class="spec">
+<p><tt>to_string(UUID) -&gt; string()</tt>
+<ul class="definitions"><li><tt>UUID = list() | binary() | integer()</tt></li>
+</ul></p>
+</div><p>Format the UUID into string representation.</p>
+
+<h3 class="function"><a name="v3-2">v3/2</a></h3>
+<div class="spec">
+<p><tt>v3(Namespace::binary(), Name) -&gt; binary()</tt>
+<ul class="definitions"><li><tt>Name = binary() | string()</tt></li>
+</ul></p>
+</div><p>Get a MD5 name based UUID (RFC4122 Version 3).</p>
+
+<h3 class="function"><a name="v4-0">v4/0</a></h3>
+<div class="spec">
+<p><tt>v4() -&gt; binary()</tt></p>
+</div><p>Get a (pseudo) random UUID (RFC4122 Version 4).</p>
+
+<h3 class="function"><a name="v5-2">v5/2</a></h3>
+<div class="spec">
+<p><tt>v5(Namespace::binary(), Name) -&gt; binary()</tt>
+<ul class="definitions"><li><tt>Name = binary() | string()</tt></li>
+</ul></p>
+</div><p>Get a SHA-1 name based UUID (RFC4122 Version 5).</p>
+
+<h3 class="function"><a name="validate-1">validate/1</a></h3>
+<div class="spec">
+<p><tt>validate(UUID) -&gt; match | nomatch</tt>
+<ul class="definitions"><li><tt>UUID = string() | binary() | integer()</tt></li>
+</ul></p>
+</div><p>Validate a UUID.</p>
+<hr>
+
+<div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
+<p><i>Generated by EDoc, Mar 4 2011, 23:34:34.</i></p>
+</body>
+</html>
