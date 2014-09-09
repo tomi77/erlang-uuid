@@ -160,7 +160,7 @@ unpack(UUID) when is_integer(UUID) ->
 %% Tests
 %%====================================================================
 
--ifdef(EUNIT).
+-ifdef(TEST).
 
 rand_test_() ->
 	[
